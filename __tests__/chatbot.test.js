@@ -1,3 +1,4 @@
+import React from 'react';
 import { render, screen, WaitFor } from '@testing-library/react';
 import Widget from '@hexlet/chatbot-v2';
 import steps from './__fixtures__/chatbotFixture.js';
