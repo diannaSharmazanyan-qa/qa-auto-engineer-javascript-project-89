@@ -1,11 +1,28 @@
+# Проект "Тестирование виджета чат-бота":
 ### Hexlet tests and linter status:
-[![Actions Status](https://github.com/diannaSharmazanyan-qa/qa-auto-engineer-javascript-project-89/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/diannaSharmazanyan-qa/qa-auto-engineer-javascript-project-89/actions)
+[![Actions Status](https://github.com/diannaSharmazanyan-qa/qa-auto-engineer-javascript-project-87/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/diannaSharmazanyan-qa/qa-auto-engineer-javascript-project-87/actions)
 
-# React + Vite
+## Описание проекта
+__"Виджет чат-бот"__ : в этом проекте реализовано тестирование чат-бота, который представлен в виде npm-пакета. Пакет экспортирует функцию, принимающую конфигурацию поведения чат-бота, и возвращает React-компонент, представляющий интерфейс чата. Конфигурация описывает различные состояния чат-бота и возможные переходы между ними с помощью кнопок, определяя логику взаимодействия с пользователем.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Задача тестирования включает проверку следующих аспектов:
+- Корректность отображения интерфейса чата в разных состояниях.
+- Правильность смены состояний при взаимодействии пользователя с чат-ботом.
+- Соответствие поведения чат-бота заданной конфигурации.
+- Обработка пограничных случаев, таких как некорректные данные в конфигурации.
 
-Currently, two official plugins are available:
+### Установка
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```
+npm i
+```
+
+### Запуск тестов
+- Запуск чат-бот виджета:
+```
+npm run dev
+```
+- Запуск тестов:
+```
+npm test
+```
