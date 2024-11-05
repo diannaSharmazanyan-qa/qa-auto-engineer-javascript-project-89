@@ -1,117 +1,180 @@
 import userEvent from "@testing-library/user-event";
-import {validSteps} from "../../__fixtures__/validSteps.js";
 import {screen, waitFor} from "@testing-library/react";
 import {expect} from "vitest";
 
 
 export default class WidgetPage {
+    constructor() {
+        waitFor(() => {
+            this.openChatButton = screen.getByText('Открыть Чат')
+            this.startConversationButton = screen.getByText('Начать разговор')
+            this.changeProfessionButton = screen.getByText('Сменить профессию или трудоустроиться')
+        }).then()
+    }
+
+
+    async openChat() {
+        await waitFor(async () => {
+            await userEvent.click(this.openChatButton)
+        })
+    }
+
+    async closeChat() {
+        await waitFor(async () => {
+            await userEvent.click(screen.getByLabelText('Close'))
+        })
+    }
+
+    async startConversation() {
+        await waitFor(async () => {
+            await userEvent.click(this.startConversationButton)
+        })
+    }
+
+    async changeProfession() {
+        await waitFor(async () => {
+            await userEvent.click(this.changeProfessionButton)
+        })
+    }
+
+    async tellMore() {
+        await waitFor(async () => {
+            await userEvent.click(screen.getByText('Расскажи подробнее'))
+        })
+    }
+
+    async signUpToCourse() {
+        await waitFor(async () => {
+            await userEvent.click(screen.getByText('Останусь здесь, запишусь на курс'))
+        })
+    }
+
     async checkRenderWidget() {
-        expect(screen.getByText('Открыть Чат')).toBeInTheDocument()
+        expect(this.openChatButton).toBeInTheDocument()
     }
 
     async checkChatWasClosed() {
-        await waitFor(async () => {
-            await userEvent.click(screen.getByText('Открыть Чат'))
-            await userEvent.click(document.querySelector('.btn-close'))
-        })
-        await expect(document.querySelector('.modal-title')).not.toBeInTheDocument()
+        await this.openChat()
+        this.modalTitle = screen.getByText('Виртуальный помощник')
+        await this.closeChat()
+        await expect(this.modalTitle).not.toBeVisible()
     }
 
-    async checkIdWelcomeBlock() {
-        await waitFor(async () => {
-            await userEvent.click(screen.getByText('Открыть Чат'));
-        })
-        await expect(screen.getByText(validSteps[0].messages[0])).toBeVisible
-        await expect(screen.getByText(validSteps[0].buttons[0].text)).toBeVisible()
+    async navigateToIdWelcome() {
+        await this.openChat()
     }
 
-    async checkIdStartBlock() {
-        await waitFor(async () => {
-            await userEvent.click(screen.getByText('Открыть Чат'))
-            await userEvent.click(screen.getByText('Начать разговор'))
-        })
-        await expect(screen.getByText(validSteps[1].messages[0])).toBeVisible
-        await expect(screen.getByText(validSteps[1].buttons[0].text)).toBeVisible()
-        await expect(screen.getByText(validSteps[1].buttons[1].text)).toBeVisible()
-        await expect(screen.getByText(validSteps[1].buttons[2].text)).toBeVisible()
+    async checkWelcomeBlock() {
+        await expect(screen.getByText(/Привет.*/)).toBeVisible()
+        await expect(screen.getByText('Начать разговор')).toBeVisible()
     }
 
+    async navigateToIdStart() {
+        await this.openChat()
+        await this.startConversation()
+    }
+
+    async checkStartBlock() {
+        await expect(screen.getByText(/Помогу вам.*/)).toBeVisible()
+        await expect(screen.getByText('Сменить профессию или трудоустроиться')).toBeVisible()
+        await expect(screen.getByText(/Попробовать себя.*/)).toBeVisible()
+        await expect(screen.getByText(/Я разработчик.*/)).toBeVisible()
+    }
+
+    async navigateToIdSwitch() {
+        await this.openChat()
+        await this.startConversation()
+        await this.changeProfession()
+    }
 
     async checkIdSwitchBlock() {
-        await waitFor(async () => {
-            await userEvent.click(screen.getByText('Открыть Чат'))
-            await userEvent.click(screen.getByText('Начать разговор'))
-            await userEvent.click(screen.getByText('Сменить профессию или трудоустроиться'))
-        })
+        await expect(/У нас есть программы.*/).toBeVisible
+        await expect(screen.getByText(/Расскажи.*/)).toBeVisible()
+        await expect(screen.getByText('А есть что-нибудь попроще')).toBeVisible()
+        await expect(screen.getByText(/Вернуться.*/)).toBeVisible()
+    }
 
-        await expect(validSteps[3].messages[0]).toBeVisible
-        await expect(screen.getByText(validSteps[3].buttons[0].text)).toBeVisible()
-        await expect(screen.getByText(validSteps[3].buttons[1].text)).toBeVisible()
-        await expect(screen.getByText(validSteps[3].buttons[2].text)).toBeVisible()
+    async navigateIdTry() {
+        await this.navigateToIdSwitch()
+        await waitFor(async () => {
+            await userEvent.click(screen.getByText('А есть что-нибудь попроще'))
+        })
     }
 
     async checkIdTryBlock() {
+        await expect(screen.queryAllByAltText(/У нас есть.*/)).toBeVisible
+        await expect(screen.getByText(/Интересно.*/)).toBeVisible()
+        await expect(screen.getByText(/А что.*/)).toBeVisible()
+        await expect(screen.getByText(/Вернуться.*/)).toBeVisible()
+    }
+
+    async navigateToIdAdvanced() {
+        await this.navigateToIdStart()
         await waitFor(async () => {
-            await userEvent.click(screen.getByText('Открыть Чат'))
-            await userEvent.click(screen.getByText('Начать разговор'))
-            await userEvent.click(screen.getByText('Сменить профессию или трудоустроиться'))
-            await userEvent.click(screen.getByText('А есть что-нибудь попроще'))
+            await userEvent.click(screen.getByText('Я разработчик, хочу углубить свои знания'))
         })
-        await expect(screen.getByText(validSteps[2].messages[0])).toBeVisible
-        await expect(screen.getByText(validSteps[2].buttons[0].text)).toBeVisible()
-        await expect(screen.getByText(validSteps[2].buttons[1].text)).toBeVisible()
-        await expect(screen.getByText(validSteps[2].buttons[2].text)).toBeVisible()
     }
 
     async checkIdAdvancedBlock() {
-        await waitFor(async () => {
-            await userEvent.click(screen.getByText('Открыть Чат'))
-            await userEvent.click(screen.getByText('Начать разговор'))
-            await userEvent.click(screen.getByText('Я разработчик, хочу углубить свои знания'))
-        })
-        await expect(screen.getByText(validSteps[5].messages[0])).toBeVisible
-        await expect(screen.getByText(validSteps[5].buttons[0].text)).toBeVisible()
-        await expect(screen.getByText(validSteps[5].buttons[1].text)).toBeVisible()
+        await expect(screen.getByText(/Отлично.*/)).toBeVisible
+        await expect(screen.getByText(/Расскажи.*/)).toBeVisible()
+        await expect(screen.getByText(/Верни.*/)).toBeVisible()
+    }
+
+    async navigateToIdDetails() {
+        await this.navigateToIdSwitch()
+        await this.tellMore()
     }
 
     async checkIdDetailsBlock() {
+        expect(screen.getByText(/В Хекслете.*/)).toBeVisible()
+        expect(screen.getByText(/Останусь.*/)).toBeVisible()
+        expect(screen.getByText(/Вернуться.*/)).toBeVisible()
+    }
+
+    async navigateToIdDetailsThroughClickInteresting() {
+        await this.openChat()
+        await this.startConversation()
+        await this.changeProfession()
+
         await waitFor(async () => {
-            await userEvent.click(screen.getByText('Открыть Чат'))
-            await userEvent.click(screen.getByText('Начать разговор'))
-            await userEvent.click(screen.getByText('Сменить профессию или трудоустроиться'))
             await userEvent.click(screen.getByText('А есть что-нибудь попроще'))
             await userEvent.click(screen.getByText('Интересно'))
         })
-        expect(screen.getByText(validSteps[4].messages[0])).toBeVisible()
-        expect(screen.getByText(validSteps[4].buttons[0].text)).toBeVisible()
-        expect(screen.getByText(validSteps[4].buttons[1].text)).toBeVisible()
+    }
+
+    async checkReturnToDetailsIdBlock() {
+        expect(screen.getByText(/В Хекслете.*/)).toBeVisible()
+        expect(screen.getByText(/Останусь.*/)).toBeVisible()
+        expect(screen.getByText(/Вернуться.*/)).toBeVisible()
+    }
+
+    async navigateToIdSubscribe() {
+        await this.navigateToIdDetails()
+        await this.signUpToCourse()
     }
 
     async checkIdSubscribeBlock() {
+        expect(screen.getByText(/Ага, дублирую ссылку.*/)).toBeVisible()
+        expect(screen.getByRole('button', {name: 'Останусь здесь, запишусь на курс'})).toBeVisible()
+        expect(screen.getByText(/Верни меня в начало/)).toBeVisible()
+    }
+
+    async navigateToIdStartThroughClickReturnMe() {
+        await this.navigateToIdSubscribe()
         await waitFor(async () => {
-            await userEvent.click(screen.getByText('Открыть Чат'))
-            await userEvent.click(screen.getByText('Начать разговор'))
-            await userEvent.click(screen.getByText('Сменить профессию или трудоустроиться'))
-            await userEvent.click(screen.getByText('Расскажи подробнее'))
-            await userEvent.click(screen.getByText('Останусь здесь, запишусь на курс'))
+            await userEvent.click(screen.getByText('Верни меня в начало'))
         })
-        expect(screen.getByText(validSteps[6].messages[0])).toBeVisible()
-        expect(document.querySelectorAll('.btn-outline-primary').item(0).textContent)
-            .equals(validSteps[6].buttons[0].text)
-        expect(screen.getByText(validSteps[6].buttons[1].text)).toBeVisible()
+
     }
 
     async checkIdStartAfterClickReturnToStart() {
-        await waitFor(async () => {
-            await userEvent.click(screen.getByText('Открыть Чат'))
-            await userEvent.click(screen.getByText('Начать разговор'))
-            await userEvent.click(screen.getByText('Сменить профессию или трудоустроиться'))
-            await userEvent.click(screen.getByText('Расскажи подробнее'))
-            await userEvent.click(screen.getByText('Останусь здесь, запишусь на курс'))
-            await userEvent.click(screen.getByText('Верни меня в начало'))
-        })
-        expect(document.querySelectorAll('.message').item(10).textContent).equals(
-            validSteps[1].messages[0]
-        )
+        expect(screen.getByRole('button', {name: /Сменить профессию.*/})).toBeVisible()
+        expect(screen.getByRole('button', {name: /Попробовать.*/})).toBeVisible()
+    }
+
+    async checkIsVisibleElementsWithEmptySteps() {
+        expect(screen.queryByText(/Начать разговор/i)).not.toBeInTheDocument()
+        expect(screen.queryByText(/Привет.*/)).not.toBeInTheDocument()
     }
 }

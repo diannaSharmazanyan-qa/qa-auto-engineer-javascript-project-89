@@ -1,9 +1,8 @@
-import {render, screen, waitFor} from '@testing-library/react'
+import {render, waitFor} from '@testing-library/react'
 import {describe, test, vi} from "vitest"
 import Widget from "@hexlet/chatbot-v2";
 import {validSteps} from "../__fixtures__/validSteps.js";
 import WidgetPage from "./pages/widgetPage.js";
-import userEvent from "@testing-library/user-event";
 import invalidSteps from "../__fixtures__/invalidSteps.js";
 import emptySteps from "../__fixtures__/emptySteps.js";
 
@@ -24,7 +23,8 @@ describe('ChatBot', () => {
         })
 
         test('Блок - welcome', async () => {
-            await widgetPage.checkIdWelcomeBlock();
+            await widgetPage.navigateToIdWelcome();
+            await widgetPage.checkWelcomeBlock();
         })
 
         test('Проверка, что чат закрыт', async () => {
@@ -32,51 +32,59 @@ describe('ChatBot', () => {
         })
 
         test('Блок - start', async () => {
-            await widgetPage.checkIdStartBlock();
+            await widgetPage.navigateToIdStart();
+            await widgetPage.checkStartBlock();
         })
 
 
         test('Блок - switch', async () => {
+            await widgetPage.navigateToIdSwitch();
             await widgetPage.checkIdSwitchBlock();
         })
 
         test('Блок - details', async () => {
+            await widgetPage.navigateToIdDetails()
             await widgetPage.checkIdDetailsBlock()
         })
 
         test('Блок - try', async () => {
+            await widgetPage.navigateIdTry()
             await widgetPage.checkIdTryBlock()
         })
 
         test('Блок - advanced', async () => {
+            await widgetPage.navigateToIdAdvanced()
             await widgetPage.checkIdAdvancedBlock()
         })
 
         test('После клика по кнопке "Интересно" попадаем на id details', async () => {
-            await widgetPage.checkIdDetailsBlock()
+            await widgetPage.navigateToIdDetailsThroughClickInteresting()
+            await widgetPage.checkReturnToDetailsIdBlock()
         })
 
         test('Блок - subscribe', async () => {
+            await widgetPage.navigateToIdSubscribe()
             await widgetPage.checkIdSubscribeBlock()
         })
 
         test('После клика "Верни меня в начало" редирект на id start', async () => {
+            await widgetPage.navigateToIdStartThroughClickReturnMe()
             await widgetPage.checkIdStartAfterClickReturnToStart()
         })
 
         test('Проверка скролла', async () => {
-            await waitFor(async () => {
-                await userEvent.click(screen.getByText('Открыть Чат'))
-                await userEvent.click(screen.getByText('Начать разговор'))
-                await userEvent.click(screen.getByText('Сменить профессию или трудоустроиться'))
-            })
+            await widgetPage.navigateToIdSwitch()
             await expect(mockScroll).toHaveBeenCalled();
         })
     })
-})
 
 describe('Негативные кейсы', () => {
-    test.only("Приложение падает с невалидными шагами", async () => {
+    beforeEach(() => {
+        widgetPage = new WidgetPage()
+        mockScroll = Element.prototype.scrollIntoView = vi.fn();
+     })
+
+    test("Приложение падает с невалидными шагами", async () => {
         await waitFor(() => {
             expect(() => {
                 render(Widget(invalidSteps));
@@ -84,12 +92,11 @@ describe('Негативные кейсы', () => {
         });
     });
 
-    test('С пустыми шагами нет кнопки "Начать разговор" и сообщения "Привет...', async () => {
-        await render(Widget(emptySteps));
-        Element.prototype.scrollIntoView = vi.fn();
+        test('С пустыми шагами нет кнопки "Начать разговор" и сообщения "Привет...', async () => {
+            await render(Widget(emptySteps));
 
-        await userEvent.click(screen.getByText('Открыть Чат'))
-        expect(screen.queryByText('Начать разговор')).not.toBeInTheDocument()
-        expect(screen.queryByText(/Привет.*/)).not.toBeInTheDocument()
-    });
+            await widgetPage.openChat()
+            await widgetPage.checkIsVisibleElementsWithEmptySteps()
+        });
+    })
 })
