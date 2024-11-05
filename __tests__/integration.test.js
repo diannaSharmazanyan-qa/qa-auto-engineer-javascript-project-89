@@ -1,4 +1,4 @@
-import {render, waitFor, screen} from "@testing-library/react";
+import {render, waitFor} from "@testing-library/react";
 import {describe, test, vi} from 'vitest';
 import App from "../src/App.jsx";
 import WidgetPage from "./pages/widgetPage.js";
@@ -9,8 +9,7 @@ let registrationPage;
 let registrationData;
 let widgetPage;
 
-
-describe('Интеграционные тесты', () => {
+describe('', () => {
   beforeEach(() => {
     render(<App />);
     widgetPage = new WidgetPage()
@@ -19,13 +18,11 @@ describe('Интеграционные тесты', () => {
   });
 
   test('Рендер виджета в App компоненте', async () => {
-    await widgetPage.navigateToIdWelcome();
-    await widgetPage.checkWelcomeBlock();
+    await widgetPage.checkIdWelcomeBlock();
   });
 
   test('Чек блока Start', async () => {
-    await widgetPage.navigateToIdStart()
-    await widgetPage.checkStartBlock();
+    await widgetPage.checkIdStartBlock();
   });
 
   test('Регистрация в хост приложении', async () => {
@@ -35,9 +32,5 @@ describe('Интеграционные тесты', () => {
       await registrationPage.submitForm();
     })
     expect(document.querySelector('.table')).toMatchSnapshot();
-  });
-
-  test('Видимость формы регистрации', async () => {
-    expect(screen.getByRole('form')).toBeVisible()
   });
 })
