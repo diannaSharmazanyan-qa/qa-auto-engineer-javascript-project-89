@@ -4,12 +4,16 @@ import {expect} from "vitest";
 
 
 export default class WidgetPage {
-    constructor() {
-        waitFor(() => {
-            this.openChatButton = screen.getByText('Открыть Чат')
-            this.startConversationButton = screen.getByText('Начать разговор')
-            this.changeProfessionButton = screen.getByText('Сменить профессию или трудоустроиться')
-        }).then()
+    get openChatButton () {
+        return screen.getByText('Открыть Чат')
+    }
+
+    get startConversationButton () {
+        return screen.getByText('Начать разговор')
+    }
+
+    get changeProfessionButton () {
+        return screen.getByText('Сменить профессию или трудоустроиться')
     }
 
 
